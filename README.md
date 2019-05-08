@@ -92,10 +92,12 @@ Create certs for BITS:
 kubectl apply -f bits-certs.yaml
 ```
 
+```
 helm install --namespace scf --name scf \
   --values values.yaml \
   --set "secrets.UAA_CA_CERT=${CA_CERT}" \
   eirini-release/helm/cf
+```
 
 update DNS with loadbalancer services
 
