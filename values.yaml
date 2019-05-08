@@ -1,0 +1,72 @@
+env:
+  DOMAIN: &DOMAIN app.$DOMAIN
+  ENABLE_OPI_STAGING: false
+  UAA_HOST: uaa.app.$DOMAIN
+  UAA_PORT: 2793
+
+kube:
+  auth: rbac
+  external_ips: &external_ips []
+  storage_class:
+    persistent: standard
+    shared: standard
+
+secrets: &secrets
+  CLUSTER_ADMIN_PASSWORD: not-a-good-password
+  UAA_ADMIN_CLIENT_SECRET: not-a-good-secret
+  BLOBSTORE_PASSWORD: &BLOBSTORE_PASSWORD "not-a-good-password"
+  UAA_CA_CERT: ~
+
+services: &services
+  loadbalanced: true
+  externalDNS: true
+
+eirini:
+  env:
+    DOMAIN: *DOMAIN
+  services: *services
+  bitsUseExistingCertSecret: true
+  opi:
+    use_registry_ingress: false
+    #Enable if use_registry_ingress is set to 'true'
+    #ingress_endpoint: kubernetes-cluster-ingress-endpoint
+    #Enable if your cluster is using docker,
+    #by default eirini will assume containerd
+    use_docker: true
+
+  secrets:
+    BLOBSTORE_PASSWORD: *BLOBSTORE_PASSWORD
+    BITS_SERVICE_SECRET: bad-secret
+    BITS_SERVICE_SIGNING_USER_PASSWORD: bad-password
+    BITS_TLS_CRT: ~
+    BITS_TLS_KEY: ~
+
+  kube:
+    external_ips: *external_ips
+
+sizing:
+  nats:
+    capabilities: ["SYS_RESOURCE"]
+  router:
+    capabilities: ["ALL"]
+  locket:
+    capabilities: ["SYS_RESOURCE"]
+  tcp_router:
+    capabilities: ["SYS_RESOURCE"]
+  routing_api:
+    capabilities: ["SYS_RESOURCE"]
+  api_group:
+    capabilities: ["SYS_RESOURCE"]
+  cc_uploader:
+    capabilities: ["SYS_RESOURCE"]
+  diego_api:
+    capabilities: ["SYS_RESOURCE"]
+  diego_brain:
+    capabilities: ["SYS_RESOURCE"]
+  diego_ssh:
+    capabilities: ["SYS_RESOURCE"]
+  diego_cell:
+    capabilities: ["SYS_RESOURCE"]
+
+console:
+  migrateVolumes: false
